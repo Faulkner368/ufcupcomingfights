@@ -49,55 +49,55 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
 
 
-class listFightsIntentHandler(AbstractRequestHandler):
+class ListFightsIntentHandler(AbstractRequestHandler):
     """Handler for List Fights Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("ListFightsIntent")(handler_input)
         
     # Helper methods
-    def get_ufc_events_data(self) -> list:
-    """
-    Returns a list of past and future fights as
-    a list of objects. The object attributes are:
-
-    ['id', 'title', 'subtitle', 'event_dategmt', 'url_name']
-    """
+    def get_ufc_events_data(self):
+        """
+        Returns a list of past and future fights as
+        a list of objects. The object attributes are:
     
-    url = "http://api.ufc.com/bars/events.json"
-
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        fights = response.json()
-        for fight in fights:
-            fight_data_as_string = fight['event_dategmt']
-            fight['event_dategmt'] = convert_str_to_date("", fight_data_as_string)
-        return fights
-    else:
-        return False
+        ['id', 'title', 'subtitle', 'event_dategmt', 'url_name']
+        """
+        
+        url = "http://api.ufc.com/bars/events.json"
+        
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            fights = response.json()
+            for fight in fights:
+                fight_date_as_string = fight['event_dategmt']
+                fight['event_dategmt'] = self.convert_str_to_date(fight_date_as_string)
+            return fights
+        else:
+            return False
 
     def convert_str_to_date(self, date_as_string):
         """
         Converts a datetime string to a datetime object and returns
         the datetime object.
         """
-    
+        
         return datetime.datetime.strptime(date_as_string, '%Y-%m-%dT%H:%M:%S.%fZ')
     
     def upcoming_fights(self, fights):
         """
         Returns only the future fights from a list of fight objects
         """
-    
+        
         upcoming_fights = []
         for fight in fights:
             if fight['event_dategmt'] > datetime.datetime.now():
                 upcoming_fights.append(fight)
-    
+        
         return upcoming_fights
     
-    def get_fights_as_text(self, fights):
+    def get_fights_as_text(self, upcoming_fights):
         """
         Returns upcoming fights as a string to be spoken
         by Alexa. For example:
@@ -105,23 +105,22 @@ class listFightsIntentHandler(AbstractRequestHandler):
         Alexa: Here are a list of upcoming UFC fights... Adesanya vs Romero on the seventh of march 2020
         """
         
-    
-        speak_out = "Here are a list of upcoming UFC fights... "
-    
+        speak_output = "Here are a list of upcoming UFC fights... "
+        
         for fight in upcoming_fights:
             date = fight['event_dategmt']
             date_text = "{day} of {month} {year}".format(day=numbers_as_ordinal[date.day], month=months[date.month], year=date.year)
             text = "{title} on the {date}, ".format(title=fight["title"].split(" - ")[1], date=date_text)
-            speak_out += text
+            speak_output += text
         
-        return speak_out
+        return speak_output
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         
-        fights = get_ufc_events_data()
-        upcoming_fights = upcoming_fights(fights)
-        speak_out = get_fights_as_text(upcoming_fights)
+        fights = self.get_ufc_events_data()
+        upcoming_fights = self.upcoming_fights(fights)
+        speak_output = self.get_fights_as_text(upcoming_fights)
 
         return (
             handler_input.response_builder
@@ -236,7 +235,7 @@ sb = SkillBuilder()
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(HelpIntentHandler())
-sb.add_request_handler(ListFightsIntentIntentHandler())
+sb.add_request_handler(ListFightsIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
 sb.add_request_handler(IntentReflectorHandler()) # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
