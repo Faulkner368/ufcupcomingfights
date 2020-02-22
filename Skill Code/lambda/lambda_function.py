@@ -16,18 +16,10 @@ from ask_sdk_model import Response
 
 import requests
 import datetime
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-numbers_as_ordinal = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth", 7: "seventh", 8: "eigth", 9: "ninth",
-                    10: "tenth", 11: "eleventh", 12: "twelfth", 13: "thirteenth", 14: "fourteenth", 15: "fifteenth", 16: "sixteenth",
-                    17: "seventeenth", 18: "eighteenth", 19: "nineteenth", 20: "twentieth", 21: "twenty first", 22: "twenty second",
-                    23: "twenty third", 24: "twenty fourth", 25: "twenty fifth", 26: "twenty sixth", 27: "twenty seventh", 28: "twenty eighth",
-                      29: "twenty ninth", 30: "thirtieth", 31: "thirty first"}
-
-months = {1: "january", 2: "february", 3: "march", 4: "april", 5: "may", 6: "june",
-          7: "july", 8: "august", 9: "september", 10: "october", 11: "november", 12: "december"}
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -97,7 +89,7 @@ class ListFightsIntentHandler(AbstractRequestHandler):
         
         return upcoming_fights
     
-    def get_fights_as_text(self, upcoming_fights):
+    def get_fights_as_text(self, upcoming_fights, numbers_as_date_str, months):
         """
         Returns upcoming fights as a string to be spoken
         by Alexa. For example:
@@ -109,18 +101,51 @@ class ListFightsIntentHandler(AbstractRequestHandler):
         
         for fight in upcoming_fights:
             date = fight['event_dategmt']
-            date_text = "{day} of {month} {year}".format(day=numbers_as_ordinal[date.day], month=months[date.month], year=date.year)
+            date_text = "{day} of {month} {year}".format(day=numbers_as_date_str[str(date.day)], month=months[str(date.month)], year=date.year)
             text = "{title} on the {date}, ".format(title=fight["title"].split(" - ")[1], date=date_text)
             speak_output += text
         
         return speak_output
+        
+    def get_numbers_as_date_str(self):
+        """
+        Returns dictionary value from key value pairs where the key is 
+        a number digits (str) and the value is the corresponding
+        word. For example:
+        
+        "7": "seventh"
+        """
+        
+        file = open("numbers_as_date_str.json", "r")
+        numbers_as_date_str = json.loads(file.read())
+        return numbers_as_date_str
+        
+    def get_month_str_from_number(self):
+        """
+        Returns dictionary value month from key value pairs
+        where the key is the number of month and the value is
+        the corresponding string representation. For example:
+        
+        "5": "may"
+        """
+        
+        file = open("months.json", "r")
+        months = json.loads(file.read())
+        return months
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         
+        numbers_as_date_str = self.get_numbers_as_date_str()
+        months = self.get_month_str_from_number()
+        
         fights = self.get_ufc_events_data()
         upcoming_fights = self.upcoming_fights(fights)
-        speak_output = self.get_fights_as_text(upcoming_fights)
+        
+        if len(upcoming_fights) < 1:
+            speak_output = "Sorry, there is either no up coming fights or no data available"
+        else:
+            speak_output = self.get_fights_as_text(upcoming_fights, numbers_as_date_str, months)
 
         return (
             handler_input.response_builder

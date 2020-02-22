@@ -1,7 +1,7 @@
 {
     "interactionModel": {
         "languageModel": {
-            "invocationName": "ufc fights",
+            "invocationName": "u. f. c. fights",
             "intents": [
                 {
                     "name": "AMAZON.CancelIntent",
@@ -23,10 +23,11 @@
                     "name": "ListFightsIntent",
                     "slots": [],
                     "samples": [
-                        "what upcoming ufc fights are there",
+                        "list",
+                        "fights",
+                        "whats the up coming fights",
+                        "up coming fights",
                         "list ufc fights",
-                        "what are the upcoming fights",
-                        "upcoming fights",
                         "list fights"
                     ]
                 }
