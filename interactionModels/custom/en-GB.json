@@ -1,0 +1,39 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "u. f. c. fights",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "ListFightsIntent",
+          "slots": [],
+          "samples": [
+            "list",
+            "fights",
+            "whats the up coming fights",
+            "up coming fights",
+            "list ufc fights",
+            "list fights"
+          ]
+        }
+      ],
+      "types": []
+    }
+  },
+  "version": "6"
+}

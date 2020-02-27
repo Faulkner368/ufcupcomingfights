@@ -1,0 +1,53 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "summary": "Reads out a list of future UFC fights",
+          "examplePhrases": [
+            "Alexa open ufc fights"
+          ],
+          "keywords": [
+            "ufc",
+            "ultimate",
+            "fighting",
+            "bjj",
+            "brazilian",
+            "jiujutsu",
+            "mma",
+            "fighting",
+            "martial",
+            "arts"
+          ],
+          "name": "UFC Upcoming Fights",
+          "smallIconUri": "file://assets/images/en-GB_smallIconUri.png",
+          "description": "Gets a list of UFC fights from the UFC API and reads out future fights, naming the fighters and the date of the fight",
+          "largeIconUri": "file://assets/images/en-GB_largeIconUri.png"
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Alexa open ufc upcoming fights\n\nlist fights",
+      "category": "SPORTS_NEWS",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:728097415463:function:2ea70333-5359-411a-aff3-438bba52ba8f:Release_1"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "en-GB": {}
+      },
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}
